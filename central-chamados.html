@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Central de Chamados PSTI</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#070d1f;--card:#0f1b3d;--card2:#13234d;--bd:#223566;--tx:#e6ecff;--mut:#8da0d0;--pri:#2f6bff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.app{display:flex;min-height:100vh}
+aside{width:220px;background:#0a1330;border-right:1px solid var(--bd);padding:16px 12px;flex-shrink:0}
+.logo{font-weight:700;font-size:16px;margin-bottom:18px}.logo small{display:block;color:#4d8bff}
+nav a{display:block;padding:10px 12px;border-radius:8px;color:var(--mut);cursor:pointer;margin-bottom:2px}
+nav a.on{background:var(--pri);color:#fff}nav a:hover:not(.on){background:var(--card)}
+aside h4{margin:18px 0 6px;font-size:12px;color:var(--mut)}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}
+select,input{width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:7px 8px;font:inherit}
+button{background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit}button:hover{border-color:var(--pri)}
+main{flex:1;padding:16px;min-width:0}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.top .sp{flex:1}.top input{width:220px}
+.mut{color:var(--mut);font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;cursor:pointer;border-top:3px solid var(--c)}
+.kpi:hover{background:var(--card2)}.kpi b{font-size:28px;display:block}.kpi span{font-size:12px;color:var(--mut)}
+.grid2{display:grid;grid-template-columns:1fr 1.6fr;gap:12px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}.grid2 .card{margin:0}
+.card h3{margin:0 0 10px;font-size:15px}
+.ov{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:640px}
+th{text-align:left;color:var(--mut);font-weight:600;font-size:12px;padding:6px}td{padding:7px 6px;border-top:1px solid var(--bd)}
+tr.cl{cursor:pointer}tr.cl:hover{background:var(--card2)}
+.badge{padding:2px 8px;border-radius:10px;font-size:11px;white-space:nowrap;background:color-mix(in srgb,var(--c) 25%,transparent);color:var(--c);border:1px solid var(--c)}
+.av{display:inline-flex;width:22px;height:22px;border-radius:50%;background:#2c4a9a;font-size:9px;align-items:center;justify-content:center;margin-right:6px}
+.leg{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}.leg i{width:10px;height:10px;border-radius:2px}.leg span{flex:1}
+.bar{height:6px;background:var(--bd);border-radius:3px;width:90px;display:inline-block;vertical-align:middle;margin-left:6px}.bar i{display:block;height:100%;border-radius:3px;background:#3ecf6e}
+#fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--pri);border:0;border-radius:28px;padding:12px 18px;font-weight:600;box-shadow:0 6px 20px #0008;z-index:5}
+#chat{position:fixed;right:18px;bottom:calc(72px + env(safe-area-inset-bottom,0px));width:380px;max-width:calc(100vw - 24px);height:520px;max-height:70vh;background:#0b1636;border:1px solid var(--pri);border-radius:14px;display:none;flex-direction:column;z-index:6}
+#chat.on{display:flex}#chat header{padding:10px 14px;border-bottom:1px solid var(--bd);font-weight:600}
+#msgs{flex:1;overflow-y:auto;padding:10px}.m{margin:6px 0;padding:8px 10px;border-radius:10px;max-width:92%;font-size:13px}
+.m.u{background:var(--pri);margin-left:auto}.m.a{background:var(--card2)}.m ul{margin:4px 0;padding-left:18px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:6px 10px}.chips button{font-size:11px;padding:4px 8px;border-radius:12px}
+#cf{display:flex;gap:6px;padding:10px;border-top:1px solid var(--bd)}
+@media(max-width:800px){.app{flex-direction:column}aside{width:100%}.grid2{grid-template-columns:1fr}}
+</style></head><body>
+<div class="app">
+<aside>
+<div class="logo">Central de Chamados<small>PSTI</small></div>
+<nav id="nav"><a data-v="geral" class="on">Visão Geral</a><a data-v="meus">Meus Chamados</a><a data-v="todos">Todos os Chamados</a><a data-v="resp">Responsáveis</a><a data-v="rel">Relatórios (copiar CSV)</a></nav>
+<h4>FILTROS</h4>
+<label>Filial</label><select id="fFil"></select>
+<label>Período (abertura)</label><input type="date" id="fDe" value="2024-05-16"><input type="date" id="fAte" value="2024-05-22" style="margin-top:4px">
+<label>Status</label><select id="fSt"></select>
+<label>Analista responsável</label><select id="fAn"></select>
+<label>Prazo (SLA)</label><select id="fSla"><option value="">Todos</option><option value="atraso">Em atraso</option><option value="prazo">Dentro do prazo</option></select>
+<button id="clr" style="width:100%;margin-top:12px">Limpar filtros</button>
+</aside>
+<main>
+<div class="top"><b>Filial selecionada: <span id="fl"></span></b><span class="sp"></span><span class="mut">Última atualização: 22/05/2024 10:30</span><input id="q" placeholder="Buscar chamados..."><button id="exp">Exportar</button></div>
+<div class="kpis" id="kpis"></div>
+<div id="sCharts" class="grid2"><div class="card"><h3>Distribuição dos chamados por status</h3><div id="donut"></div></div><div class="card"><h3>Evolução dos chamados (últimos 7 dias)</h3><div id="line"></div></div></div>
+<div class="card" id="sRec"><h3 id="recT">Chamados recentes</h3><div class="ov" id="rec"></div></div>
+<div class="card" id="sAn"><h3>Desempenho dos analistas (últimos 7 dias)</h3><div class="ov" id="an"></div><p class="mut">* SLA Médio: percentual de chamados finalizados dentro do prazo acordado.</p></div>
+</main></div>
+<button id="fab">💬 Assistente IA</button>
+<div id="chat"><header>Assistente PSTI <span class="mut">— analisa os chamados filtrados</span></header><div id="msgs"></div><div class="chips" id="chips"></div><div id="cf"><input id="ci" placeholder="Pergunte em linguagem natural..."><button id="cs">Enviar</button></div></div>
+<script>
+const NOW=new Date(2024,4,22,10,30).getTime(),H=36e5,D=24*H,p=n=>String(n).padStart(2,'0');
+const ST={ab:['Aberto','#3b8bff'],ac:['Aguardando Cliente','#f5a623'],ti:['Aguardando TI','#b36bff'],an:['Em Análise','#5b6cff'],co:['Concluído','#3ecf6e']};
+const FIL=['São Paulo','Campinas','Santos','Ribeirão Preto','Sorocaba','Rio de Janeiro','Curitiba'];
+const ANA=['Lucas Martins','Rafael Almeida','Gustavo Lima','Matheus Rocha','Thiago Nunes'];
+const SOL=['Carlos Ferreira','Amanda Souza','Bruno Oliveira','Fernanda Costa','Juliana Martins','Paulo Mendes','Renata Dias','Diego Ramos'];
+const TIT=['Erro na emissão de proposta','Falha no cálculo de parcela','Erro ao anexar documento','Consulta não retorna informações','Endosso não finaliza','Lentidão no sistema de apólices','Acesso bloqueado ao portal','Divergência de comissão','Erro na impressão de boleto','Cadastro de cliente duplicado'];
+const PRI={Alta:24,Média:48,Baixa:72};
+let s=7;const rnd=()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296},pick=a=>a[Math.floor(rnd()*a.length)];
+const T=[];for(let i=0;i<128;i++){const open=NOW-rnd()*(6.4*D+10.5*H),pri=pick(['Alta','Média','Média','Baixa']),due=open+PRI[pri]*H,r=rnd();
+let st=r<.28?'ab':r<.45?'ac':r<.55?'ti':r<.68?'an':'co',close=null;
+if(st=='co'){close=Math.min(NOW,open+(2+rnd()*(PRI[pri]*1.15))*H)}
+T.push({id:'PSTI-'+(10425-i),tit:pick(TIT),sol:pick(SOL),ana:pick(ANA),fil:pick(FIL),open,due,close,st,pri})}
+T.sort((a,b)=>b.open-a.open);
+const late=t=>t.st!='co'&&NOW>t.due,fm=d=>{d=new Date(d);return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes())};
+const ini=n=>n.split(' ').map(x=>x[0]).join(''),$=id=>document.getElementById(id);
+const fh=h=>Math.floor(h)+'h '+p(Math.round(h%1*60))+'m';
+let view='geral';
+const opt=(a,all)=>'<option value="">'+all+'</option>'+a.map(x=>`<option>${x}</option>`).join('');
+$('fFil').innerHTML=opt(FIL,'Todas as filiais');$('fAn').innerHTML=opt(ANA,'Todos os analistas');
+$('fSt').innerHTML='<option value="">Todos os status</option>'+Object.entries(ST).map(([k,v])=>`<option value="${k}">${v[0]}</option>`).join('');
+function flt(){const f=$('fFil').value,st=$('fSt').value,an=$('fAn').value,sl=$('fSla').value,q=$('q').value.toLowerCase(),
+de=new Date($('fDe').value+'T00:00').getTime(),ate=new Date($('fAte').value+'T23:59').getTime();
+return T.filter(t=>(!f||t.fil==f)&&(!st||t.st==st)&&(!an||t.ana==an)&&t.open>=de&&t.open<=ate&&(!sl||(sl=='atraso'?late(t)&&t.st!='co':t.st!='co'&&!late(t)))&&(!q||(t.id+t.tit+t.sol+t.ana+t.fil).toLowerCase().includes(q)))}
+const cnt=(a,k)=>a.reduce((o,t)=>(o[t[k]]=(o[t[k]]||0)+1,o),{});
+function donut(a){const tot=a.length||1,R=70,C=2*Math.PI*R;let off=0,c='';
+const ks=Object.keys(ST);ks.forEach(k=>{const n=a.filter(t=>t.st==k).length,l=n/tot*C;c+=`<circle r="${R}" cx="90" cy="90" fill="none" stroke="${ST[k][1]}" stroke-width="26" stroke-dasharray="${l} ${C-l}" stroke-dashoffset="${-off}" transform="rotate(-90 90 90)"/>`;off+=l});
+return `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center"><svg width="180" height="180">${c}<text x="90" y="92" text-anchor="middle" fill="#fff" font-size="30" font-weight="700">${a.length}</text><text x="90" y="110" text-anchor="middle" fill="#8da0d0" font-size="12">Total</text></svg><div style="flex:1;min-width:160px">`+
+ks.map(k=>{const n=a.filter(t=>t.st==k).length;return `<div class="leg"><i style="background:${ST[k][1]}"></i><span>${ST[k][0]}</span><b>${n}</b> <span class="mut" style="flex:0">(${(n/tot*100).toFixed(1)}%)</span></div>`}).join('')+'</div></div>'}
+function line(a){const days=[];for(let i=6;i>=0;i--){const d=new Date(NOW-i*D);d.setHours(0,0,0,0);days.push(d.getTime())}
+const ks=Object.keys(ST),ser=ks.map(k=>days.map(d=>a.filter(t=>t.st==k&&t.open>=d&&t.open<d+D).length));
+const mx=Math.max(10,Math.ceil(Math.max(...ser.flat())/5)*5),W=560,Hh=200,x=i=>40+i*(W-60)/6,y=v=>Hh-25-v/mx*(Hh-45);let c='';
+for(let g=0;g<=4;g++){const v=mx/4*g;c+=`<line x1="40" x2="${W-20}" y1="${y(v)}" y2="${y(v)}" stroke="#223566"/><text x="30" y="${y(v)+4}" text-anchor="end" fill="#8da0d0" font-size="10">${Math.round(v)}</text>`}
+days.forEach((d,i)=>{const dt=new Date(d);c+=`<text x="${x(i)}" y="${Hh-8}" text-anchor="middle" fill="#8da0d0" font-size="10">${p(dt.getDate())}/${p(dt.getMonth()+1)}</text>`});
+ser.forEach((v,j)=>{const col=ST[ks[j]][1];c+=`<polyline fill="none" stroke="${col}" stroke-width="2" points="${v.map((n,i)=>x(i)+','+y(n)).join(' ')}"/>`+v.map((n,i)=>`<circle cx="${x(i)}" cy="${y(n)}" r="3" fill="${col}"><title>${ST[ks[j]][0]}: ${n}</title></circle>`).join('')});
+return `<svg viewBox="0 0 ${W} ${Hh}" style="width:100%">${c}</svg><div class="mut" style="display:flex;gap:12px;flex-wrap:wrap">${ks.map(k=>`<span><i style="display:inline-block;width:10px;height:3px;background:${ST[k][1]}"></i> ${ST[k][0]}</span>`).join('')}</div>`}
+const bd=t=>`<span class="badge" style="--c:${ST[t.st][1]}">${ST[t.st][0]}</span>`;
+function tbl(a,n){return `<table><tr><th>PSTI</th><th>Título</th><th>Solicitante</th><th>Analista</th><th>Filial</th><th>Abertura</th><th>Status</th><th>SLA</th></tr>`+a.slice(0,n).map(t=>`<tr class="cl" data-id="${t.id}"><td>${t.id}</td><td>${t.tit}</td><td><span class="av">${ini(t.sol)}</span>${t.sol}</td><td><span class="av">${ini(t.ana)}</span>${t.ana}</td><td>${t.fil}</td><td>${fm(t.open)}</td><td>${bd(t)}</td><td>${t.st=='co'?(t.close<=t.due?'<span style="color:#3ecf6e">No prazo</span>':'<span style="color:#ff6b6b">Fora do prazo</span>'):late(t)?'<span style="color:#ff6b6b">Em atraso</span>':'<span style="color:#3ecf6e">No prazo</span>'}</td></tr>`).join('')+'</table>'+(a.length>n?`<p class="mut">Mostrando ${n} de ${a.length}.</p>`:'')+(a.length?'':'<p class="mut">Nenhum chamado encontrado.</p>')}
+function slaPct(a){const c=a.filter(t=>t.st=='co');return c.length?Math.round(c.filter(t=>t.close<=t.due).length/c.length*100):0}
+function anTbl(a){return `<table><tr><th>Responsável</th><th>Aberto</th><th>Aguard. Cliente</th><th>Aguard. TI</th><th>Em Análise</th><th>Concluído</th><th>Total</th><th>Em atraso</th><th>SLA Médio</th><th>Tempo Médio</th></tr>`+ANA.map(n=>{const x=a.filter(t=>t.ana==n),c=x.filter(t=>t.st=='co'),tm=c.length?c.reduce((s,t)=>s+(t.close-t.open),0)/c.length/H:0,sp=slaPct(x),g=k=>x.filter(t=>t.st==k).length;
+return `<tr><td><span class="av">${ini(n)}</span>${n}</td><td>${g('ab')}</td><td>${g('ac')}</td><td>${g('ti')}</td><td>${g('an')}</td><td>${g('co')}</td><td><b>${x.length}</b></td><td>${x.filter(late).length}</td><td>${sp}%<span class="bar"><i style="width:${sp}%"></i></span></td><td>${tm?fh(tm):'-'}</td></tr>`}).join('')+'</table>'}
+function render(){const a=flt();$('fl').textContent=$('fFil').value||'Todas as filiais';
+const k=[['Total de chamados',a.length,'#2f6bff',''],...Object.keys(ST).map(x=>[ST[x][0],a.filter(t=>t.st==x).length,ST[x][1],x]),['Em atraso',a.filter(t=>late(t)).length,'#ff5c5c','late']];
+$('kpis').innerHTML=k.map(x=>`<div class="kpi" style="--c:${x[2]}" data-k="${x[3]}"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('');
+$('donut').innerHTML=donut(a);$('line').innerHTML=line(a);
+const full=view=='todos'||view=='meus';$('recT').textContent=full?(view=='meus'?'Meus chamados ('+a.length+')':'Todos os chamados ('+a.length+')'):'Chamados recentes';
+$('rec').innerHTML=tbl(a,full?60:6);$('an').innerHTML=anTbl(a);
+$('sCharts').style.display=(view=='geral')?'':'none';$('sRec').style.display=view=='resp'?'none':'';$('sAn').style.display=(view=='geral'||view=='resp')?'':'none'}
+['fFil','fDe','fAte','fSt','fAn','fSla'].forEach(i=>$(i).onchange=render);$('q').oninput=render;
+$('clr').onclick=()=>{['fFil','fSt','fAn','fSla','q'].forEach(i=>$(i).value='');$('fDe').value='2024-05-16';$('fAte').value='2024-05-22';render()};
+$('kpis').onclick=e=>{const c=e.target.closest('.kpi');if(!c)return;const k=c.dataset.k;if(k=='late'){$('fSla').value='atraso';$('fSt').value=''}else{$('fSt').value=k;$('fSla').value=''}render()};
+$('nav').onclick=e=>{const v=e.target.dataset.v;if(!v)return;if(v=='rel'){exp();return}view=v;[...$('nav').children].forEach(x=>x.classList.toggle('on',x.dataset.v==v));$('fAn').value=v=='meus'?'Lucas Martins':($('fAn').value=='Lucas Martins'&&view!='meus'?'':$('fAn').value);render()};
+function exp(){const a=flt(),csv='PSTI;Titulo;Solicitante;Analista;Filial;Abertura;Status;Prazo\n'+a.map(t=>[t.id,t.tit,t.sol,t.ana,t.fil,fm(t.open),ST[t.st][0],fm(t.due)].join(';')).join('\n');
+const done=m=>{$('exp').textContent=m;setTimeout(()=>$('exp').textContent='Exportar',2000)};
+try{navigator.clipboard.writeText(csv).then(()=>done('CSV copiado ✓'),()=>done('Cópia bloqueada'))}catch(e){done('Cópia bloqueada')}}
+$('exp').onclick=exp;
+// ---- Agente
+const nz=x=>x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const li=a=>'<ul>'+a.map(x=>`<li>${x}</li>`).join('')+'</ul>';
+const rank=(a,k,f)=>Object.entries(cnt(a,k)).sort((x,y)=>y[1]-x[1]).map(([n,v])=>f?f(n,v):`${n}: <b>${v}</b>`);
+function agent(q){const a=flt(),n=nz(q),op=a.filter(t=>t.st!='co'),lt=a.filter(late),m=n.match(/psti-?(\d+)/);
+if(!a.length)return 'Os filtros atuais não retornam chamados. Limpe os filtros e tente novamente.';
+if(m){const t=T.find(x=>x.id=='PSTI-'+m[1]);if(!t)return 'Não encontrei esse chamado.';return `<b>${t.id}</b> — ${t.tit}<br>Filial: ${t.fil} · Solicitante: ${t.sol}<br>Analista: ${t.ana} · Prioridade: ${t.pri}<br>Status: <b>${ST[t.st][0]}</b> · Aberto em ${fm(t.open)} · Prazo ${fm(t.due)}<br>${t.st=='co'?(t.close<=t.due?'Concluído dentro do prazo.':'Concluído fora do prazo.'):late(t)?`⚠️ Em atraso há ${fh((NOW-t.due)/H)}.`:`Vence em ${fh((t.due-NOW)/H)}.`}`}
+const fl=FIL.find(f=>n.includes(nz(f))),an=ANA.find(x=>n.includes(nz(x.split(' ')[0]))||n.includes(nz(x)));
+if(fl){const x=a.filter(t=>t.fil==fl);return `<b>${fl}</b>: ${x.length} chamados, ${x.filter(t=>t.st!='co').length} em aberto, <b>${x.filter(late).length} em atraso</b>, SLA ${slaPct(x)}%.`+li(Object.keys(ST).map(k=>`${ST[k][0]}: ${x.filter(t=>t.st==k).length}`))+`Problema mais frequente: ${rank(x,'tit')[0]||'-'}.`}
+if(an){const x=a.filter(t=>t.ana==an);return `<b>${an}</b>: ${x.length} chamados, ${x.filter(t=>t.st!='co').length} em aberto, ${x.filter(late).length} em atraso, SLA ${slaPct(x)}%.`}
+if(/atras|vencid|fora do prazo|critic/.test(n)){const o=[...lt].sort((x,y)=>x.due-y.due).slice(0,3);return `Há <b>${lt.length} chamados em atraso</b> (${(lt.length/a.length*100).toFixed(0)}% do total).<br>Filiais mais afetadas:`+li(rank(lt,'fil').slice(0,3))+'Analistas com mais atrasos:'+li(rank(lt,'ana').slice(0,3))+'Mais antigos vencidos:'+li(o.map(t=>`${t.id} (${t.fil}) — ${fh((NOW-t.due)/H)} de atraso`))}
+if(/\bsla\b|prazo acordado/.test(n)){const r=ANA.map(x=>[x,slaPct(a.filter(t=>t.ana==x))]).sort((x,y)=>y[1]-x[1]);return `SLA geral: <b>${slaPct(a)}%</b> dos concluídos dentro do prazo.<br>Melhor: ${r[0][0]} (${r[0][1]}%). Pior: ${r.at(-1)[0]} (${r.at(-1)[1]}%).`}
+if(/cliente/.test(n)){const x=a.filter(t=>t.st=='ac');return `<b>${x.length}</b> chamados aguardando retorno do cliente. Filiais: ${rank(x,'fil').slice(0,3).join(', ')||'-'}. Sugestão: cobrar retorno dos mais antigos — ${x.sort((p,q)=>p.open-q.open).slice(0,3).map(t=>t.id).join(', ')}.`}
+if(/\bti\b|tecnolog/.test(n)){const x=a.filter(t=>t.st=='ti');return `<b>${x.length}</b> chamados aguardando TI (${x.filter(late).length} em atraso). Principais problemas:`+li(rank(x,'tit').slice(0,3))}
+if(/tempo medio|resolucao|atendimento|demora/.test(n)){const c=a.filter(t=>t.st=='co');if(!c.length)return 'Sem chamados concluídos no filtro.';const av=c.reduce((s,t)=>s+t.close-t.open,0)/c.length/H;return `Tempo médio de atendimento: <b>${fh(av)}</b> em ${c.length} concluídos.`+li(Object.keys(PRI).map(k=>{const x=c.filter(t=>t.pri==k);return `${k}: ${x.length?fh(x.reduce((s,t)=>s+t.close-t.open,0)/x.length/H):'-'}`}))}
+if(/tendenc|evolu|semana|por dia|pico/.test(n)){const d={};a.forEach(t=>{const k=new Date(t.open);const l=p(k.getDate())+'/'+p(k.getMonth()+1);d[l]=(d[l]||0)+1});const e=Object.entries(d).sort((x,y)=>x[0].localeCompare(y[0]));const pk=[...e].sort((x,y)=>y[1]-x[1])[0];return 'Aberturas por dia:'+li(e.map(([k,v])=>`${k}: ${v}`))+`Pico em <b>${pk[0]}</b> com ${pk[1]} chamados.`}
+if(/problema|motivo|tipo|titulo|recorr|erro|causa/.test(n))return 'Problemas mais recorrentes:'+li(rank(a,'tit').slice(0,5))+'Sugestão: tratar a causa-raiz do primeiro item pode reduzir o volume de forma significativa.'
+if(/filial|sucursal|unidade|regiao/.test(n))return 'Chamados por filial:'+li(rank(a,'fil',(f,v)=>`${f}: <b>${v}</b> (${a.filter(t=>t.fil==f&&late(t)).length} em atraso)`))
+if(/analista|responsavel|quem|equipe|carga/.test(n))return 'Carga por analista (em aberto / atraso):'+li(ANA.map(x=>{const y=a.filter(t=>t.ana==x);return `${x}: ${y.filter(t=>t.st!='co').length} / ${y.filter(late).length}`}))
+if(/recomend|sugest|acao|prioriz|melhor/.test(n)){const f=rank(lt,'fil')[0],r=rank(a,'tit')[0];return 'Recomendações:'+li([`Priorizar os ${lt.length} chamados em atraso, começando por ${f?f.replace(/<\/?b>/g,''):'-'}.`,`Atacar a causa-raiz de: ${r?r.replace(/<\/?b>/g,''):'-'}.`,`Redistribuir carga de ${rank(op,'ana')[0]?.replace(/<\/?b>/g,'')} chamados em aberto.`,`Cobrar cliente nos ${a.filter(t=>t.st=='ac').length} chamados parados.`])}
+if(/resumo|insight|geral|panorama|situacao|como estamos|visao/.test(n)){const tf=rank(a,'fil')[0],c=cnt(a,'st');return `<b>Panorama (${a.length} chamados)</b>`+li([`${op.length} em aberto e ${c.co||0} concluídos (${((c.co||0)/a.length*100).toFixed(0)}%).`,`<b>${lt.length}</b> em atraso; SLA dos concluídos: ${slaPct(a)}%.`,`Maior volume: ${tf}.`,`Gargalos: ${c.ac||0} aguardando cliente e ${c.ti||0} aguardando TI.`,`Problema mais comum: ${rank(a,'tit')[0]}.`])}
+return 'Posso responder sobre: <b>atrasos, SLA, filiais, analistas, aguardando cliente/TI, tempo médio, tendência, problemas recorrentes, recomendações</b> ou um chamado (ex.: PSTI-10425). Tente uma das sugestões abaixo.'}
+const msg=(h,c)=>{const d=document.createElement('div');d.className='m '+c;d.innerHTML=h;$('msgs').appendChild(d);$('msgs').scrollTop=1e9};
+function ask(q){q=q.trim();if(!q)return;$('chat').classList.add('on');msg(q.replace(/</g,'&lt;'),'u');setTimeout(()=>msg(agent(q),'a'),250)}
+msg('Olá! Sou o assistente PSTI. Analiso os chamados conforme os filtros ativos. Como posso ajudar?','a');
+['Resumo geral','Quais chamados estão em atraso?','Como está o SLA?','Qual filial tem mais chamados?','Problemas mais recorrentes','O que você recomenda?'].forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>ask(x);$('chips').appendChild(b)});
+$('fab').onclick=()=>$('chat').classList.toggle('on');$('cs').onclick=()=>{ask($('ci').value);$('ci').value=''};$('ci').onkeydown=e=>{if(e.key=='Enter')$('cs').click()};
+$('rec').onclick=e=>{const r=e.target.closest('tr.cl');if(r)ask(r.dataset.id)};
+render();
+</script></body></html>
